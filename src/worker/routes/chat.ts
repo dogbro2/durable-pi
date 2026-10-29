@@ -27,7 +27,7 @@ export const chatRoutes: readonly Route[] = [
 			const body = (await ctx.req.json()) as { message?: string; sessionId?: string; images?: string[] };
 			// v1.1.0：缺 message 時給 400，不再掉進 500 internal_error
 			const message = typeof body.message === "string" ? body.message : "";
-			if (!message.trim()) return Response.json({ error: "message 不能為空", code: "invalid_message" }, { status: 400 });
+			if (!message.trim()) return toResponse(new AppError("invalid_message", 400, "message 不能為空"));
 			return Response.json(await service(ctx).chat({ message, sessionId: body.sessionId, images: body.images }));
 		},
 	},
@@ -38,7 +38,7 @@ export const chatRoutes: readonly Route[] = [
 		handle: async (ctx) => {
 			const body = (await ctx.req.json()) as { message?: string; sessionId?: string; images?: string[] };
 			const message = typeof body.message === "string" ? body.message : "";
-			if (!message.trim()) return Response.json({ error: "message 不能為空", code: "invalid_message" }, { status: 400 });
+			if (!message.trim()) return toResponse(new AppError("invalid_message", 400, "message 不能為空"));
 			const chat = service(ctx);
 			// prepare 失敗走 HTTP 錯誤（含同會話併發的 409 chat_busy）；進入泵之後才走 SSE error 幀。
 			const prepared = await chat.prepare({ message: message, sessionId: body.sessionId, images: body.images });
