@@ -1,0 +1,28 @@
+name: smoke
+
+# 每 6 小時打一次線上介面 + 真跑一次 codemode，用來發現「部署後過了幾天才壞」的問題。
+# 也可以手動觸發。需要 secret：SMOKE_PASSWORD
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    # 預設不跑（fork 或自架例項請在 repo 變數裡設 ENABLE_SMOKE=true）。
+    if: ${{ vars.ENABLE_SMOKE == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 線上冒煙
+        env:
+          PI_PASSWORD: ${{ secrets.SMOKE_PASSWORD }}
+        run: |
+          if [ -z "$PI_PASSWORD" ]; then
+            echo "未配置 SMOKE_PASSWORD secret，跳過"
+            exit 0
+          fi
+          npm run smoke -- --deep

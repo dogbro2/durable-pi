@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "name": "ponytail-review",
+  "version": "5.3.2",
+  "description": "以正確、安全、負載、測試、速度、精簡的順序評審改動，每個問題都給出具體觸發場景。",
+  "author": "Dietrich Gebert",
+  "source": "https://github.com/DietrichGebert/ponytail/tree/main/skills/ponytail-review",
+  "license": "MIT",
+  "runtime": "prompt",
+  "tags": ["engineering", "code-review", "simplicity"],
+  "requires": {
+    "tools": ["read_file", "list_files"],
+    "bindings": [],
+    "network": []
+  },
+  "contentHash": "sha256:2c898b91dd3f8220a8b4dc68f2be6dcc983c445bae1d67554d5e063b770b3047"
+}

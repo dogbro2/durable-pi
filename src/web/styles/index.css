@@ -1,0 +1,421 @@
+@import "tailwindcss";
+
+@theme {
+	--font-sans:
+		ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+		"Noto Sans SC", sans-serif;
+	--font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+html,
+body,
+#root {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	background-color: var(--color-slate-950);
+	color: var(--color-slate-100);
+	font-family: var(--font-sans);
+	-webkit-font-smoothing: antialiased;
+	overscroll-behavior-y: none;
+}
+
+/* 深色細捲軸（Webkit + Firefox） */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #334155 transparent;
+}
+*::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+*::-webkit-scrollbar-thumb {
+	background-color: #334155;
+	border-radius: 9999px;
+}
+*::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+/*
+ * 主題（v0.25.0）：調色盤取自 **Arco Design（字節跳動開源設計系統）**。
+ * 全部通過覆蓋 Tailwind v4 的 slate/sky 變數實現，元件零改動。
+ *   深色（預設，:root）/ 淺色 theme-light / 米黃 theme-sepia / 午夜藍 theme-midnight
+ *
+ * Arco 色卡：灰階 gray-1..10 = #F7F8FA #F2F3F5 #E5E6EB #C9CDD4 #A9AEB8 #86909C #6B7785 #4E5969 #272E3B #1D2129
+ *           品牌藍 arcoblue = #165DFF（淺 #4080FF / #6AA1FF / #94BFFF，深 #0E42D2）
+ *           金 gold = #F7BA1E（#D99800 / #B37A00）
+ */
+
+/* ---------- 深色（Arco Dark：中性灰 + arco 藍） ---------- */
+:root {
+	--theme-scroll: #3a3a3c;
+	--color-slate-950: #17171a;
+	--color-slate-900: #232324;
+	--color-slate-800: #2a2a2b;
+	--color-slate-700: #3a3a3c;
+	--color-slate-600: #4e5969;
+	--color-slate-500: #86909c;
+	--color-slate-400: #a9aeb8;
+	--color-slate-300: #c9cdd4;
+	--color-slate-200: #e5e6eb;
+	--color-slate-100: #f2f3f5;
+	--color-slate-50: #f7f8fa;
+	--color-sky-300: #94bfff;
+	--color-sky-400: #6aa1ff;
+	--color-sky-500: #4080ff;
+	--color-sky-600: #165dff;
+	/* 工具呼叫：Arco green（#00B42A 系列） */
+	--color-emerald-950: #0b2410;
+	--color-emerald-500: #00b42a;
+	--color-emerald-400: #4cd263;
+	--color-emerald-300: #7be188;
+	--color-emerald-200: #aff0b5;
+	--color-emerald-100: #e8ffea;
+	/* 思維鏈：Arco purple（#722ED1 系列） */
+	--color-violet-950: #1e1233;
+	--color-violet-500: #722ed1;
+	--color-violet-400: #8d4eda;
+	--color-violet-300: #a871e3;
+	--color-violet-200: #c396ed;
+	--color-violet-100: #ddbefd;
+	/* 錯誤 / 警示：Arco red / orange */
+	--color-red-950: #2a0e0b;
+	--color-red-500: #f53f3f;
+	--color-red-300: #ffaaa5;
+	--color-red-200: #ffd2d2;
+	--color-amber-950: #2b1a05;
+	--color-amber-500: #ff7d00;
+	--color-amber-300: #ffb65c;
+	/* 產出檔案：Arco cyan（#14C9C9 系列） */
+	--color-cyan-950: #062626;
+	--color-cyan-500: #14c9c9;
+	--color-cyan-400: #3ddbd9;
+	--color-cyan-300: #6ee7e7;
+	--color-cyan-200: #a6f4f4;
+}
+
+/* ---------- 淺色（Arco Light：gray-1..10 + arco 藍） ---------- */
+.theme-light {
+	color-scheme: light;
+	--theme-fg-strong: #1d2129;
+	--theme-scroll: #e5e6eb;
+	--color-slate-950: #f7f8fa;
+	--color-slate-900: #ffffff;
+	--color-slate-800: #f2f3f5;
+	--color-slate-700: #e5e6eb;
+	--color-slate-600: #c9cdd4;
+	--color-slate-500: #86909c;
+	--color-slate-400: #6b7785;
+	--color-slate-300: #4e5969;
+	--color-slate-200: #272e3b;
+	--color-slate-100: #1d2129;
+	--color-slate-50: #0e1116;
+	--color-sky-300: #0e42d2;
+	--color-sky-400: #165dff;
+	--color-sky-500: #4080ff;
+	--color-sky-600: #165dff;
+}
+
+/* ---------- 米黃（Arco 金色系：暖底 + 金強調色） ---------- */
+.theme-sepia {
+	color-scheme: light;
+	--theme-fg-strong: #2e2415;
+	--theme-scroll: #ebdcbc;
+	--color-slate-950: #fcf8ec;
+	--color-slate-900: #fffdf6;
+	--color-slate-800: #f7efd9;
+	--color-slate-700: #ebdcbc;
+	--color-slate-600: #d0be9b;
+	--color-slate-500: #a08c68;
+	--color-slate-400: #7c6944;
+	--color-slate-300: #5c4a2c;
+	--color-slate-200: #453722;
+	--color-slate-100: #2e2415;
+	--color-slate-50: #17110a;
+	--color-sky-300: #8c5c00;
+	--color-sky-400: #b37a00;
+	--color-sky-500: #d99800;
+	--color-sky-600: #b37a00;
+}
+
+/* ---------- 午夜藍（arco 藍壓暗做中性底） ---------- */
+.theme-midnight {
+	color-scheme: dark;
+	--theme-scroll: #263454;
+	--color-slate-950: #0b1220;
+	--color-slate-900: #121a2e;
+	--color-slate-800: #1a2440;
+	--color-slate-700: #263454;
+	--color-slate-600: #3a4c74;
+	--color-slate-500: #6b80a8;
+	--color-slate-400: #93a6c9;
+	--color-slate-300: #b8c7e0;
+	--color-slate-200: #d6dff0;
+	--color-slate-100: #eaf0fa;
+	--color-slate-50: #f5f8ff;
+	--color-sky-300: #94bfff;
+	--color-sky-400: #6aa1ff;
+	--color-sky-500: #4080ff;
+	--color-sky-600: #165dff;
+}
+
+/* 淺色系：把「深底 + 淺字」的語義色反轉成「淺底 + 深字」，
+   覆蓋工具 pill（Arco green）、思維鏈（Arco purple）、錯誤氣泡（Arco red/orange）、計劃進度。
+   950 檔改成對應色卡最淺一級，這樣 bg-*-950/40 在淺底上是淡淡的同色背景。 */
+.theme-light,
+.theme-sepia {
+	--color-emerald-950: #e8ffea;
+	--color-emerald-500: #00b42a;
+	--color-emerald-400: #009a29;
+	--color-emerald-300: #008026;
+	--color-emerald-200: #007a21;
+	--color-emerald-100: #006622;
+	--color-violet-950: #f5e8ff;
+	--color-violet-500: #722ed1;
+	--color-violet-400: #551db0;
+	--color-violet-300: #551db0;
+	--color-violet-200: #3c108f;
+	--color-violet-100: #27066e;
+	--color-red-950: #ffece8;
+	--color-red-500: #f53f3f;
+	--color-red-300: #cb2634;
+	--color-red-200: #a9151f;
+	--color-amber-950: #fff7e8;
+	--color-amber-500: #ff7d00;
+	--color-amber-300: #b45309;
+	--color-cyan-950: #e6fffb;
+	--color-cyan-500: #14c9c9;
+	--color-cyan-400: #0e9a9a;
+	--color-cyan-300: #0b7a7a;
+	--color-cyan-200: #096666;
+	--color-rose-200: #a9151f;
+	--color-rose-300: #cb2634;
+	--color-sky-200: #0e42d2;
+}
+
+/* 捲軸跟隨主題 */
+.theme-light *,
+.theme-sepia *,
+.theme-midnight * {
+	scrollbar-color: var(--theme-scroll) transparent;
+}
+.theme-light *::-webkit-scrollbar-thumb,
+.theme-sepia *::-webkit-scrollbar-thumb,
+.theme-midnight *::-webkit-scrollbar-thumb {
+	background-color: var(--theme-scroll);
+}
+
+/* 淺色系對比度修正：
+   元件裡 bg-sky-500/15 + text-white 的選中態在淺底上白字不可讀，統一改成深色文字；
+   實心強調色按鈕（bg-sky-600 / bg-violet-600 等）仍保持白字。 */
+.theme-light .text-white,
+.theme-sepia .text-white {
+	color: var(--theme-fg-strong);
+}
+.theme-light .bg-sky-600.text-white,
+.theme-light .bg-rose-600.text-white,
+.theme-light .bg-emerald-600.text-white,
+.theme-light .bg-violet-600.text-white,
+.theme-light .bg-indigo-600.text-white,
+.theme-light .bg-amber-600.text-white,
+.theme-light .bg-sky-600\/90.text-white,
+.theme-sepia .bg-sky-600.text-white,
+.theme-sepia .bg-rose-600.text-white,
+.theme-sepia .bg-emerald-600.text-white,
+.theme-sepia .bg-violet-600.text-white,
+.theme-sepia .bg-indigo-600.text-white,
+.theme-sepia .bg-amber-600.text-white,
+.theme-sepia .bg-sky-600\/90.text-white {
+	color: #ffffff;
+}
+
+/* 中性按鈕的 hover:text-white 在淺底上會變成白字看不見，改回深色 */
+.theme-light .hover\:text-white:hover,
+.theme-sepia .hover\:text-white:hover {
+	color: var(--theme-fg-strong);
+}
+/* 實心強調色按鈕 hover 後仍需白字 */
+.theme-light .bg-sky-600.hover\:text-white:hover,
+.theme-light .bg-sky-600\/90.hover\:text-white:hover,
+.theme-sepia .bg-sky-600.hover\:text-white:hover,
+.theme-sepia .bg-sky-600\/90.hover\:text-white:hover {
+	color: #ffffff;
+}
+
+/* 彈窗遮罩：淺色主題下不要用純黑 60%，太重 */
+.dialog-scrim {
+	background-color: rgb(0 0 0 / 0.6);
+}
+.theme-light .dialog-scrim,
+.theme-sepia .dialog-scrim {
+	background-color: rgb(15 23 42 / 0.32);
+}
+
+/* 面板彈窗進場（NERE-62 契約 §4.7 / §7）：桌面縮放淡入，手機從底部滑入；關閉即解除安裝，不做退場 */
+@keyframes modal-pop {
+	from {
+		opacity: 0;
+		transform: scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+@keyframes sheet-up {
+	from {
+		transform: translateY(100%);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+@media (min-width: 721px) {
+	.modal-card {
+		animation: modal-pop 160ms ease-out;
+	}
+}
+@media (max-width: 720px) {
+	.modal-card {
+		animation: sheet-up 240ms cubic-bezier(0.2, 0.8, 0.25, 1);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.modal-card {
+		animation: none !important;
+	}
+}
+
+/* 深色底上的半透明疊色在淺色主題下需要更實的背景 */
+.theme-light .bg-slate-900\/60,
+.theme-light .bg-slate-900\/40,
+.theme-light .bg-slate-900\/80,
+.theme-sepia .bg-slate-900\/60,
+.theme-sepia .bg-slate-900\/40,
+.theme-sepia .bg-slate-900\/80 {
+	background-color: var(--color-slate-900);
+}
+
+/*
+ * Markdown 排版（v0.25.2）：字號跟隨容器，標題/程式碼/表格用 em 相對縮放，
+ * 因此在窄欄、寬閱讀、聊天氣泡裡都能按各自基準保持一致比例。
+ */
+.md-prose {
+	line-height: 1.75;
+	color: var(--color-slate-200);
+	overflow-wrap: break-word;
+}
+.md-prose > :first-child {
+	margin-top: 0;
+}
+.md-prose > :last-child {
+	margin-bottom: 0;
+}
+.md-prose h1,
+.md-prose h2,
+.md-prose h3,
+.md-prose h4,
+.md-prose h5,
+.md-prose h6 {
+	margin: 1.4em 0 0.55em;
+	font-weight: 600;
+	line-height: 1.35;
+	color: var(--color-slate-100);
+}
+.md-prose h1 {
+	font-size: 1.5em;
+}
+.md-prose h2 {
+	font-size: 1.26em;
+}
+.md-prose h3 {
+	font-size: 1.12em;
+}
+.md-prose h4,
+.md-prose h5,
+.md-prose h6 {
+	font-size: 1em;
+}
+.md-prose p {
+	margin: 0.6em 0;
+}
+.md-prose ul,
+.md-prose ol {
+	margin: 0.6em 0;
+	padding-left: 1.45em;
+}
+.md-prose ul {
+	list-style: disc;
+}
+.md-prose ol {
+	list-style: decimal;
+}
+.md-prose li {
+	margin: 0.22em 0;
+}
+.md-prose li::marker {
+	color: var(--color-slate-500);
+}
+.md-prose li > ul,
+.md-prose li > ol {
+	margin: 0.22em 0;
+}
+.md-prose blockquote {
+	margin: 0.85em 0;
+	padding: 0.15em 0 0.15em 0.9em;
+	border-left: 3px solid var(--color-slate-600);
+	color: var(--color-slate-400);
+}
+.md-prose blockquote p {
+	margin: 0.3em 0;
+}
+.md-prose hr {
+	margin: 1.3em 0;
+	border: 0;
+	border-top: 1px solid var(--color-slate-700);
+}
+.md-prose .md-table-wrap {
+	margin: 0.9em 0;
+	overflow-x: auto;
+	border: 1px solid var(--color-slate-700);
+	border-radius: 0.5rem;
+}
+.md-prose table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.92em;
+}
+.md-prose th,
+.md-prose td {
+	padding: 0.45em 0.7em;
+	border-bottom: 1px solid var(--color-slate-700);
+	vertical-align: top;
+}
+.md-prose thead th {
+	background: var(--color-slate-800);
+	font-weight: 600;
+	color: var(--color-slate-100);
+}
+.md-prose tbody tr:last-child td {
+	border-bottom: 0;
+}
+.md-prose a {
+	color: var(--color-sky-400);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.md-prose img {
+	max-width: 100%;
+	margin: 0.6em 0;
+	border-radius: 0.5rem;
+	border: 1px solid var(--color-slate-700);
+}
+.md-prose code {
+	font-size: 0.9em;
+}
+.md-prose .md-code-label {
+	font-size: 0.78em;
+}

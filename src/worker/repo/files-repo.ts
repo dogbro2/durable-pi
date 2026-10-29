@@ -1,0 +1,75 @@
+import type { SqlHandle } from "../db/migrations";
+
+/** `vfs_v2` 的型別化記錄（ADR-0001 §3）：只返回資料，不構造 Response。 */
+export type FileSummary = { name: string; size: number; updated_at: string };
+export type FileContent = { name: string; content: string };
+export type AllFileRow = { sessionId: string; name: string; size: number; updatedAt: string; sessionTitle: string };
+
+export function listBySession(sql: SqlHandle, sessionId: string): FileSummary[] {
+	return sql
+		.exec(
+			"SELECT name, length(content) AS size, updated_at FROM vfs_v2 WHERE conversation_id = ? ORDER BY updated_at DESC",
+			sessionId,
+		)
+		.toArray() as FileSummary[];
+}
+
+export function getContent(sql: SqlHandle, sessionId: string, name: string): FileContent | undefined {
+	const rows = sql
+		.exec("SELECT name, content FROM vfs_v2 WHERE conversation_id = ? AND name = ?", sessionId, name)
+		.toArray() as FileContent[];
+	return rows[0];
+}
+
+export function write(sql: SqlHandle, sessionId: string, name: string, content: string, now: string): void {
+	sql.exec(
+		"INSERT INTO vfs_v2 (conversation_id, name, content, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(conversation_id, name) DO UPDATE SET content = excluded.content, updated_at = excluded.updated_at",
+		sessionId,
+		name,
+		content,
+		now,
+	);
+}
+
+export function remove(sql: SqlHandle, sessionId: string, name: string): void {
+	sql.exec("DELETE FROM vfs_v2 WHERE conversation_id = ? AND name = ?", sessionId, name);
+}
+
+/** 會話刪除時清掉該會話全部檔案（NERE-24 級聯）：返回實際刪除行數。 */
+export function removeSession(sql: SqlHandle, sessionId: string): number {
+	return sql.exec("DELETE FROM vfs_v2 WHERE conversation_id = ? RETURNING name", sessionId).toArray().length;
+}
+
+/** 跨會話彙總，`query` 已歸一化；`%` 通配由呼叫方負責。 */
+export function listAll(sql: SqlHandle, query: string): AllFileRow[] {
+	const like = `%${query}%`;
+	return sql
+		.exec(
+			`SELECT v.conversation_id AS sessionId, v.name AS name, length(v.content) AS size, v.updated_at AS updatedAt,
+				COALESCE(s.title, '') AS sessionTitle
+			FROM vfs_v2 v LEFT JOIN sessions_meta s ON s.id = v.conversation_id
+			WHERE (? = '' OR lower(v.name) LIKE ? OR lower(COALESCE(s.title, '')) LIKE ?)
+			ORDER BY v.updated_at DESC LIMIT 500`,
+			query,
+			like,
+			like,
+		)
+		.toArray() as AllFileRow[];
+}
+
+/** 備份：全部檔案正文（不含大小/標題等派生欄位）。 */
+export function listForBackup(
+	sql: SqlHandle,
+): { conversation_id: string; name: string; content: string; updated_at: string }[] {
+	return sql
+		.exec("SELECT conversation_id, name, content, updated_at FROM vfs_v2 ORDER BY conversation_id, name")
+		.toArray() as { conversation_id: string; name: string; content: string; updated_at: string }[];
+}
+
+/** 恢復：按 (conversation_id, name) upsert。 */
+export function restoreRow(
+	sql: SqlHandle,
+	row: { conversation_id: string; name: string; content: string; updated_at: string },
+): void {
+	write(sql, row.conversation_id, row.name, row.content, row.updated_at);
+}

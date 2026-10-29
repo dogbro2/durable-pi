@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "name": "bp-diagnose-root",
+  "version": "2.88.9",
+  "description": "用復現、隔離、假設、驗證四階段定位缺陷根因，在證據確認前不給修復方案。",
+  "author": "Daniel",
+  "source": "https://github.com/danielvm-git/bigpowers/tree/main/skills/diagnose-root",
+  "license": "MIT",
+  "runtime": "prompt",
+  "tags": ["diagnosis", "debugging", "root-cause"],
+  "requires": {
+    "tools": ["read_file", "list_files"],
+    "bindings": [],
+    "network": []
+  },
+  "contentHash": "sha256:6056b8888269fbd963b9b56676de7e0daf18c0b3ef25b7fdc23d71931d03abe7"
+}

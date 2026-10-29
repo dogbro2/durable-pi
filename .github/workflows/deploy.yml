@@ -1,0 +1,87 @@
+# PR 跑構建和金標迴歸；push main 在通過後部署 Worker（靜態資產 + API 同域）。
+# deploy secrets: CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID
+name: deploy
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build:web --if-present
+      - run: bash scripts/check-layering.sh
+      # Skill Hub 目錄門禁：catalog 出現 blocked、sha256 漂移或 audit.hash 不一致即失敗（NERE-55）
+      - run: npm run catalog:check
+      # 型別檢查（NERE-76）：vitest 用 esbuild 不做型別檢查，tsc 才能攔住呼叫簽名錯誤
+      - run: npx tsc --noEmit -p tsconfig.ci.json
+      - run: npm test
+
+  deploy:
+    needs: test
+    # v1.1.0：去掉了寫死的原作者倉庫名（fork 後永遠不會部署）。只要求 push 且配了部署 secrets。
+    if: ${{ github.event_name == 'push' }}
+    env:
+      HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # deploy job 是獨立 runner：必須重新構建靜態資產，否則 wrangler 找不到 dist-web
+      - run: npm run build:web --if-present
+      - name: 未配置部署憑據則跳過
+        if: ${{ env.HAS_CF_TOKEN != 'true' }}
+        run: |
+          echo "未配置 CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID，跳過部署"
+          exit 0
+      - if: ${{ env.HAS_CF_TOKEN == 'true' }}
+        run: npx wrangler deploy --var BUILD:${{ github.sha }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # 部署後冒煙：先等 Durable Object 換成本次構建（最多 ~6 分鐘），再打線上介面 + 真跑一次 codemode
+      - name: 線上冒煙
+        if: ${{ env.HAS_CF_TOKEN == 'true' }}
+        env:
+          PI_PASSWORD: ${{ secrets.SMOKE_PASSWORD }}
+          SMOKE_BASE_URL: ${{ vars.SMOKE_BASE_URL }}
+        run: |
+          if [ -z "$PI_PASSWORD" ]; then
+            echo "未配置 SMOKE_PASSWORD secret，跳過線上冒煙"
+            exit 0
+          fi
+          # v1.1.0：用倉庫變數 SMOKE_BASE_URL 指定自己的域名，避免打別人的例項
+          if [ -z "$SMOKE_BASE_URL" ]; then
+            echo "未配置 SMOKE_BASE_URL 變數，跳過線上冒煙"
+            exit 0
+          fi
+          BASE=$SMOKE_BASE_URL
+          JAR=$(mktemp)
+          curl -s -c "$JAR" -X POST "$BASE/api/login" -H 'content-type: application/json' \
+            -d "{\"password\":\"$PI_PASSWORD\"}" > /dev/null
+          for i in $(seq 1 18); do
+            BUILD=$(curl -s -b "$JAR" "$BASE/api/version" | grep -o '"build":"[^"]*"' | cut -d'"' -f4)
+            echo "試圖 $i：線上構建 ${BUILD:-未知}"
+            if [ "$BUILD" = "${{ github.sha }}" ]; then
+              echo "DO 已切到本次構建"
+              break
+            fi
+            sleep 20
+          done
+          npm run smoke -- --deep

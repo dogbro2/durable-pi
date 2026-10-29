@@ -1,0 +1,55 @@
+import { useEffect, useRef, useState } from "react";
+import { Icon } from "./Icon";
+
+interface ThinkingBlockProps {
+	text: string;
+	/** 仍在流式輸出：自動展開並跟隨。 */
+	streaming?: boolean;
+}
+
+/**
+ * 思考過程摺疊塊（v0.22.0）。
+ * 流式輸出時展開並跟隨滾動；結束後自動收起，只留一行摘要。
+ */
+export function ThinkingBlock({ text, streaming }: ThinkingBlockProps) {
+	const [open, setOpen] = useState(Boolean(streaming));
+	const bodyRef = useRef<HTMLDivElement>(null);
+	const chars = text.replace(/\s+/g, "").length;
+
+	// 流式結束 → 自動收起；重新開始流式 → 展開
+	useEffect(() => {
+		setOpen(Boolean(streaming));
+	}, [streaming]);
+
+	useEffect(() => {
+		if (open && streaming && bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+	}, [text, open, streaming]);
+
+	if (!text.trim()) return null;
+
+	return (
+		<div className="w-full overflow-hidden rounded-xl border border-violet-500/35 bg-violet-950/50">
+			<button
+				type="button"
+				onClick={() => setOpen((v) => !v)}
+				aria-expanded={open}
+				className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs text-violet-200/90 transition-colors hover:bg-violet-500/10"
+			>
+				<Icon name="thinking" className={`h-4 w-4 ${streaming ? "animate-pulse" : ""}`} />
+				<span className="font-medium">{streaming ? "思考中…" : "思考過程"}</span>
+				<span className="tabular-nums text-violet-300/60">{chars} 字</span>
+				<span aria-hidden className="ml-auto shrink-0 text-violet-300/70">
+					<Icon name={open ? "chevronDown" : "chevronRight"} className="h-3.5 w-3.5" />
+				</span>
+			</button>
+			{open && (
+				<div
+					ref={bodyRef}
+					className="max-h-64 overflow-y-auto whitespace-pre-wrap break-words border-t border-violet-500/25 px-3 py-2 text-[12.5px] leading-relaxed text-violet-100/80"
+				>
+					{text}
+				</div>
+			)}
+		</div>
+	);
+}

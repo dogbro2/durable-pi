@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "name": "bp-terse-mode",
+  "version": "2.88.9",
+  "description": "極簡表達模式，刪掉客套與冗餘，只保留技術事實，用於上下文過長的長會話。",
+  "author": "Daniel",
+  "source": "https://github.com/danielvm-git/bigpowers/tree/main/skills/terse-mode",
+  "license": "MIT",
+  "runtime": "prompt",
+  "tags": ["communication", "writing", "tokens"],
+  "requires": {
+    "tools": [],
+    "bindings": [],
+    "network": []
+  },
+  "contentHash": "sha256:ebe5e8330471966016ef5081f3e3dac98802039485a91654beade9117b78279d"
+}

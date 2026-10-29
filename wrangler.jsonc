@@ -1,0 +1,27 @@
+{
+  "name": "durable-pi",
+  // 注意：Worker 名就是 Durable Object 的儲存位置。已在舊名下跑著的例項請保留原值，
+  // 改名等於換一個新 Worker，舊的對話 / 知識庫 / 分享不會跟著搬過去。
+  // 登入頁「看一個真實對話」入口（NERE-13）：指向一條永久、只讀的會話分享。
+  // 置空則不顯示入口；改這裡即可換演示內容，不需要再改前端。
+  // REPO_URL：分享頁頁尾「用同樣的方式做一個 →」的連結（通常填自己的倉庫位址）；留空則不顯示。
+  "vars": { "BUILD": "dev", "DEMO_SHARE_URL": "", "REPO_URL": "" },
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // v1.1.0：移除 AI / Vectorize 繫結。
+  // - Vectorize 需要手工建索引才有用，刪掉後知識庫退回 FTS5 關鍵詞檢索（本地 SQLite，零外部呼叫）；
+  // - AI 繫結原先只用於 PDF/DOCX 轉 Markdown，刪掉後知識庫只收 Markdown / 純文本；
+  // 需要恢復時把對應繫結加回來即可（程式碼路徑仍在，未繫結時自動降級）。
+  "durable_objects": { "bindings": [
+    { "name": "SpikeAgent", "class_name": "SpikeAgent" },
+    // 使用者登錄檔（v0.43.0）：邀請碼 / 登入校驗，只做 SQL，不載入 Harness
+    { "name": "UserRegistry", "class_name": "UserRegistry" }
+  ] },
+  // 前端靜態資產同域部署：/agent/* 走 Worker，其餘路徑走 SPA
+  "assets": { "directory": "./dist-web", "not_found_handling": "single-page-application", "run_worker_first": ["/agent/*", "/api/*", "/s/*"] },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["SpikeAgent"] },
+    { "tag": "v2", "new_sqlite_classes": ["UserRegistry"] }
+  ]
+}

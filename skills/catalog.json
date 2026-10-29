@@ -1,0 +1,440 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-29T05:19:38.686Z",
+  "entries": [
+    {
+      "schemaVersion": 1,
+      "name": "bp-diagnose-root",
+      "version": "2.88.9",
+      "description": "用「復現、隔離、假設、驗證」四階段定位缺陷根因，在證據確認前不給修復方案。",
+      "author": "Daniel",
+      "source": "https://github.com/danielvm-git/bigpowers/tree/main/skills/diagnose-root",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "diagnosis",
+        "debugging",
+        "root-cause"
+      ],
+      "requires": {
+        "tools": [
+          "read_file",
+          "list_files"
+        ],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/bp-diagnose-root/SKILL.md",
+      "contentHash": "sha256:38422a93f0d8bd599ab9342c8448831090d2e39d211805637636dc1871c99cd4",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": [
+            "list_files",
+            "read_file"
+          ]
+        },
+        "auditedAt": "2026-10-29T05:19:38.679Z",
+        "hash": "sha256:38422a93f0d8bd599ab9342c8448831090d2e39d211805637636dc1871c99cd4",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "bp-grill-me",
+      "version": "2.88.9",
+      "description": "用連續追問壓力測試計劃，區分事實與決策，逐個解決關鍵分歧後再進入實施。",
+      "author": "Daniel",
+      "source": "https://github.com/danielvm-git/bigpowers/tree/main/skills/grill-me",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "planning",
+        "review",
+        "decision"
+      ],
+      "requires": {
+        "tools": [
+          "read_file",
+          "list_files",
+          "web_fetch_page"
+        ],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/bp-grill-me/SKILL.md",
+      "contentHash": "sha256:3c2af24a052926b2bd53a20b2d5576713d78ad221ecea96500f55407d506347e",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": [
+            "list_files",
+            "read_file",
+            "web_fetch_page"
+          ]
+        },
+        "auditedAt": "2026-10-29T05:19:38.680Z",
+        "hash": "sha256:3c2af24a052926b2bd53a20b2d5576713d78ad221ecea96500f55407d506347e",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "bp-simple-english",
+      "version": "2.88.9",
+      "description": "用簡化技術英語規則改寫文件和說明，句子短、術語唯一、步驟可執行。",
+      "author": "Daniel",
+      "source": "https://github.com/danielvm-git/bigpowers/tree/main/skills/simple-english",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "writing",
+        "documentation",
+        "english"
+      ],
+      "requires": {
+        "tools": [],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/bp-simple-english/SKILL.md",
+      "contentHash": "sha256:ec3ce644c513cc5d6a86a7d9faed03e63ff7b6011e70f575e9acdd06de04e9c2",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": []
+        },
+        "auditedAt": "2026-10-29T05:19:38.680Z",
+        "hash": "sha256:ec3ce644c513cc5d6a86a7d9faed03e63ff7b6011e70f575e9acdd06de04e9c2",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "bp-terse-mode",
+      "version": "2.88.9",
+      "description": "極簡表達模式，刪掉客套與冗餘，只保留技術事實，用於上下文過長的長會話。",
+      "author": "Daniel",
+      "source": "https://github.com/danielvm-git/bigpowers/tree/main/skills/terse-mode",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "communication",
+        "writing",
+        "tokens"
+      ],
+      "requires": {
+        "tools": [],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/bp-terse-mode/SKILL.md",
+      "contentHash": "sha256:08fccfd1c44d71995d918b6748984ba9346ce1e7c7eb5f4643a94952b9e43a0e",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": []
+        },
+        "auditedAt": "2026-10-29T05:19:38.681Z",
+        "hash": "sha256:08fccfd1c44d71995d918b6748984ba9346ce1e7c7eb5f4643a94952b9e43a0e",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "code-review-checklist",
+      "version": "1.0.0",
+      "description": "按風險優先順序審查程式碼變更，輸出可執行的評審意見，覆蓋正確性、邊界、併發、安全、相容性和測試。",
+      "author": "Durable Pi",
+      "source": "https://github.com/scudong/cloudflare-free-web-pi/tree/main/skills/code-review-checklist",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "engineering"
+      ],
+      "requires": {
+        "tools": [],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/code-review-checklist/SKILL.md",
+      "contentHash": "sha256:a28f7fe24ff2cd08d67f9f038f3ba467b5197338fae8f504e2ce7df843c1dac0",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": []
+        },
+        "auditedAt": "2026-10-29T05:19:38.681Z",
+        "hash": "sha256:a28f7fe24ff2cd08d67f9f038f3ba467b5197338fae8f504e2ce7df843c1dac0",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "meeting-notes",
+      "version": "1.0.0",
+      "description": "把會議錄音轉寫、聊天記錄或零散筆記整理成可執行的會議紀要，明確決議、待辦、負責人和截止時間。",
+      "author": "Durable Pi",
+      "source": "https://github.com/scudong/cloudflare-free-web-pi/tree/main/skills/meeting-notes",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "meeting"
+      ],
+      "requires": {
+        "tools": [],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/meeting-notes/SKILL.md",
+      "contentHash": "sha256:d77b6b83613f810c3a8cd50299d6dc15b29fcaafdcbb8af63540bff5bca78a02",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": []
+        },
+        "auditedAt": "2026-10-29T05:19:38.682Z",
+        "hash": "sha256:d77b6b83613f810c3a8cd50299d6dc15b29fcaafdcbb8af63540bff5bca78a02",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "ponytail",
+      "version": "5.3.2",
+      "description": "懶惰資深開發模式，用最少的新程式碼完整解決問題，並主動指出被跳過的部分和風險。",
+      "author": "Dietrich Gebert",
+      "source": "https://github.com/DietrichGebert/ponytail/tree/main/skills/ponytail",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "engineering",
+        "simplicity",
+        "yagni"
+      ],
+      "requires": {
+        "tools": [
+          "read_file",
+          "list_files"
+        ],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/ponytail/SKILL.md",
+      "contentHash": "sha256:fdd482932ac2726f7903fc6d543c04f4752d3c115d6624079b1c7aa3681c6fea",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": [
+            "list_files",
+            "read_file"
+          ]
+        },
+        "auditedAt": "2026-10-29T05:19:38.682Z",
+        "hash": "sha256:fdd482932ac2726f7903fc6d543c04f4752d3c115d6624079b1c7aa3681c6fea",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "ponytail-review",
+      "version": "5.3.2",
+      "description": "以「正確、安全、扛得住負載、有測試、夠快、夠精簡」的順序評審改動，每個問題都給出具體觸發場景。",
+      "author": "Dietrich Gebert",
+      "source": "https://github.com/DietrichGebert/ponytail/tree/main/skills/ponytail-review",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "engineering",
+        "code-review",
+        "simplicity"
+      ],
+      "requires": {
+        "tools": [
+          "read_file",
+          "list_files"
+        ],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/ponytail-review/SKILL.md",
+      "contentHash": "sha256:c3261f000e38ce619fdda7a87c8d90e6e1bb99f474a862d7e774bb022c596977",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": [
+            "list_files",
+            "read_file"
+          ]
+        },
+        "auditedAt": "2026-10-29T05:19:38.683Z",
+        "hash": "sha256:c3261f000e38ce619fdda7a87c8d90e6e1bb99f474a862d7e774bb022c596977",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "reply-polish",
+      "version": "1.0.0",
+      "description": "潤色客服、商務和跨部門回覆，保留原意與承諾邊界，讓語氣專業、結構清楚、下一步明確。",
+      "author": "Durable Pi",
+      "source": "https://github.com/scudong/cloudflare-free-web-pi/tree/main/skills/reply-polish",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "business"
+      ],
+      "requires": {
+        "tools": [],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/reply-polish/SKILL.md",
+      "contentHash": "sha256:e0ad3babd94170d3384405c886216f56e7849c070cea67de502877b2d31de6e6",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": []
+        },
+        "auditedAt": "2026-10-29T05:19:38.683Z",
+        "hash": "sha256:e0ad3babd94170d3384405c886216f56e7849c070cea67de502877b2d31de6e6",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "requirement-breakdown",
+      "version": "1.0.0",
+      "description": "把一句話需求拆成可交付的使用者故事、邊界場景和可驗證的驗收標準，提前暴露依賴與開放問題。",
+      "author": "Durable Pi",
+      "source": "https://github.com/scudong/cloudflare-free-web-pi/tree/main/skills/requirement-breakdown",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "product"
+      ],
+      "requires": {
+        "tools": [],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/requirement-breakdown/SKILL.md",
+      "contentHash": "sha256:ffacf9014abaeabfad8b43d3beb1a917e6a1813409c1c68a2f1387cb2ebe5169",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": []
+        },
+        "auditedAt": "2026-10-29T05:19:38.684Z",
+        "hash": "sha256:ffacf9014abaeabfad8b43d3beb1a917e6a1813409c1c68a2f1387cb2ebe5169",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "research-brief",
+      "version": "1.0.0",
+      "description": "把研報、公告、訪談或網頁資料壓縮成結論先行、證據可追溯的投研摘要，明確事實、推斷與未知。",
+      "author": "Durable Pi",
+      "source": "https://github.com/scudong/cloudflare-free-web-pi/tree/main/skills/research-brief",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "research"
+      ],
+      "requires": {
+        "tools": [],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/research-brief/SKILL.md",
+      "contentHash": "sha256:6d9c39014918c65e5e10de349368197193ff0c9f03693816ec6ccdd58a05a233",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": []
+        },
+        "auditedAt": "2026-10-29T05:19:38.685Z",
+        "hash": "sha256:6d9c39014918c65e5e10de349368197193ff0c9f03693816ec6ccdd58a05a233",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "name": "weekly-report",
+      "version": "1.0.0",
+      "description": "把一週的零散工作記錄整理成結構清晰的週報或日報，突出結果、資料、風險與下週計劃。",
+      "author": "Durable Pi",
+      "source": "https://github.com/scudong/cloudflare-free-web-pi/tree/main/skills/weekly-report",
+      "license": "MIT",
+      "runtime": "prompt",
+      "tags": [
+        "writing"
+      ],
+      "requires": {
+        "tools": [],
+        "bindings": [],
+        "network": []
+      },
+      "contentUrl": "https://raw.githubusercontent.com/scudong/cloudflare-free-web-pi/main/skills/weekly-report/SKILL.md",
+      "contentHash": "sha256:331524cb2d53fb33d61302e355ca725bdad332477501d1f8d9647ecc6aa30b8b",
+      "audit": {
+        "status": "pass",
+        "reasons": [],
+        "detected": {
+          "runtime": "prompt",
+          "network": [],
+          "tools": []
+        },
+        "auditedAt": "2026-10-29T05:19:38.686Z",
+        "hash": "sha256:331524cb2d53fb33d61302e355ca725bdad332477501d1f8d9647ecc6aa30b8b",
+        "rulesVersion": 1,
+        "auditSource": "catalog"
+      }
+    }
+  ]
+}
