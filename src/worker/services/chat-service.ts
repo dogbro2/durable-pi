@@ -101,7 +101,14 @@ export interface ChatService {
 
 const SESSION_ERROR = /SessionFailed|storage error/i;
 const DEFAULT_TITLE = "新會話";
+/** 根會話在 list() 掃描補建時的標題（session-service）。 */
+const ROOT_DEFAULT_TITLE = "預設會話";
 const GENERATED_TITLE = /^會話 \d+$/;
+
+/** 可被首輪標題取代的預設標題：新建會話、根會話與掃描補建的編號標題。 */
+function isDefaultTitle(title: string): boolean {
+	return title === DEFAULT_TITLE || title === ROOT_DEFAULT_TITLE || GENERATED_TITLE.test(title);
+}
 
 /** assistant entry 的可見文本：字串 content 或文本塊陣列。 */
 function answerText(entry: ChatEntry | null): string {
@@ -149,13 +156,15 @@ export function createChatService({ sql, runtime }: ChatServiceDeps): ChatServic
 		void runtime.recover();
 	}
 
-	/** 標題策略（v0.22.0）：首輪取 effectiveMessage 前 24 字，之後只重新整理時間。 */
+	/** 標題策略（v0.22.0）：首輪取 effectiveMessage 前 24 字，之後只重新整理時間；使用者自訂標題不覆寫。 */
 	function updateTitle(conversationId: string, effectiveMessage: string): void {
 		try {
 			const now = new Date().toISOString();
 			const existing = sessionsRepo.get(sql, conversationId)?.title;
-			if (!existing || existing === DEFAULT_TITLE || GENERATED_TITLE.test(existing)) {
-				sessionsRepo.upsertTitle(sql, conversationId, effectiveMessage.slice(0, 24), now);
+			if (!existing || isDefaultTitle(existing)) {
+				const title = effectiveMessage.slice(0, 24);
+				if (title.trim()) sessionsRepo.upsertTitle(sql, conversationId, title, now);
+				else sessionsRepo.touchUpdatedAt(sql, conversationId, now);
 			} else {
 				sessionsRepo.touchUpdatedAt(sql, conversationId, now);
 			}
