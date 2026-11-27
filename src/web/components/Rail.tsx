@@ -97,7 +97,7 @@ export function Rail({ view, panel, onSelectView, onTogglePanel, onNewSession, n
 			{sharesAvailable && item("shares", "分享", "share", sharesUnread)}
 			{modalItem("mcp", "連線", "connection")}
 			{item("automations", "定時", "clock", automationsUnread)}
-			{modalItem("skills", "能力", "skills")}
+			{modalItem("skills", "技能", "skills")}
 			{isOwner && item("users", "使用者", "users")}
 			<div aria-hidden className="flex-1" />
 			<button type="button" onClick={onOpenSettings} title="設定" aria-label="開啟設定" className={railButton}>

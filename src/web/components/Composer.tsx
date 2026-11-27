@@ -398,7 +398,7 @@ export function Composer({
 	/** 點技能按鈕：在游標處插入「/」並展開選單。 */
 	const openSkillMenu = () => {
 		if (!skills.length && !prompts.length) {
-			setNotice("還沒有技能或模板，先在左側「能力」面板裡新增。");
+			setNotice("還沒有技能或模板，先在左側「技能」面板裡新增。");
 			return;
 		}
 		const el = textareaRef.current;
