@@ -3,7 +3,8 @@ import { DurableObject } from "cloudflare:workers";
 import { createModels, createProvider } from "@earendil-works/pi-ai/models";
 import { openAICompletionsApi } from "@earendil-works/pi-ai/api/openai-completions.lazy";
 import { BACKGROUND_CONTEXT } from "@earendil-works/chord/context";
-import { AssistantEntry, createRegistry, Harness, UsageDoc, watchEvents } from "@earendil-works/pi-durable";
+import { AssistantEntry, createRegistry, Harness, UsageDoc } from "@earendil-works/pi-durable";
+import { createViewEventTracker, type ViewLike } from "./worker/lib/view-events";
 import { openDurableObjectSqliteStorage } from "@earendil-works/pi-durable/storage/sqlite/cloudflare";
 import { demoShareToken, demoShareUrl } from "./worker/lib/share-render";
 import { createProviderFetch, withProviderFetch } from "./worker/lib/provider-fetch";
@@ -391,9 +392,20 @@ export class SpikeAgent extends DurableObject {
 				return page.items;
 			},
 			watch: async (handle, onEvents) => {
-				const stream = await watchEvents(await this.open(), handle.id as never, ctx);
-				stream.start(async (events) => {
-					await onEvents(events as unknown as readonly ChatWatchEvent[]);
+				// Pi 1.5+：watchEvents() 已移除，改看會話狀態，由 tracker 還原成舊事件形狀。
+				const stream = await (handle as unknown as {
+					watch(context: unknown): Promise<{
+						value: unknown;
+						start(listener: (call: { kind: string; value?: unknown }) => Promise<void>): void;
+						stop(): Promise<unknown>;
+					}>;
+				}).watch(ctx);
+				const tracker = createViewEventTracker();
+				tracker.next(stream.value as ViewLike, true);
+				stream.start(async (call) => {
+					if (call.kind !== "value") return;
+					const events = tracker.next(call.value as ViewLike);
+					if (events.length) await onEvents(events);
 				});
 				return {
 					stop: async () => {

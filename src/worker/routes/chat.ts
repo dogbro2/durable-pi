@@ -18,6 +18,9 @@ const SSE_HEADERS = {
 	"x-accel-buffering": "no",
 };
 
+/** SSE 保活間隔。 */
+export const SSE_HEARTBEAT_MS = 15_000;
+
 export const chatRoutes: readonly Route[] = [
 	{
 		method: "POST",
@@ -54,7 +57,15 @@ export const chatRoutes: readonly Route[] = [
 					closed = true;
 				}
 			};
+			// 心跳：慢模型在第一個字前可能長時間沉默，每 15 秒送一個 SSE 註解行保活（前端忽略無 data 的幀）。
+			const heartbeat = setInterval(() => {
+				if (closed) return;
+				writer.write(encoder.encode(": ping\n\n")).catch(() => {
+					closed = true;
+				});
+			}, SSE_HEARTBEAT_MS);
 			const pump = chat.stream(prepared, emit).finally(async () => {
+				clearInterval(heartbeat);
 				closed = true;
 				await writer.close().catch(() => {});
 			});

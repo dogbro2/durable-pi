@@ -100,7 +100,7 @@ export type ChatSubmission = { readonly id: string; readonly raw: unknown };
 export type ChatSettled = { readonly status?: string; readonly type?: string; readonly answer?: unknown };
 export type ChatToolSummary = { name: string; summary: string };
 
-/** watchEvents 的事件形狀（Service 只做 SSE 對映，不接觸 Harness）。 */
+/** 會話事件形狀（由 lib/view-events 從 Conversation.watch() 狀態還原）（Service 只做 SSE 對映，不接觸 Harness）。 */
 export type ChatWatchEvent = {
 	type: string;
 	changes?: readonly { type?: string; delta?: string }[];
