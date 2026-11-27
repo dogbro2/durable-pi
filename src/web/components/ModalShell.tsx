@@ -11,6 +11,7 @@ import { useEffect, useId, useLayoutEffect, useRef, type KeyboardEvent, type Rea
 import { createPortal } from "react-dom";
 import { FOCUSABLE_SELECTOR, nextFocusIndex } from "../lib/focus";
 import { useMediaQuery } from "../lib/useMediaQuery";
+import { useBackToClose } from "../lib/useBackToClose";
 import { Icon } from "./Icon";
 
 export type ModalSize = "md" | "lg" | "xl";
@@ -132,23 +133,7 @@ export function ModalShell({
 	}, [open]);
 
 	// 手機（sheet）：系統返回鍵 / 返回手勢關閉彈窗，而不是離開頁面。
-	useEffect(() => {
-		if (!open || !isSheet || typeof window === "undefined") return;
-		const marker = { durablePiModal: titleId };
-		window.history.pushState(marker, "");
-		let poppedByBack = false;
-		const onPop = () => {
-			poppedByBack = true;
-			onCloseRef.current();
-		};
-		window.addEventListener("popstate", onPop);
-		return () => {
-			window.removeEventListener("popstate", onPop);
-			// 用按鈕 / Esc / 遮罩關閉時，把剛推入的歷史記錄退掉，避免要多按一次返回。
-			const state = window.history.state as { durablePiModal?: string } | null;
-			if (!poppedByBack && state?.durablePiModal === titleId) window.history.back();
-		};
-	}, [open, isSheet, titleId]);
+	useBackToClose(open, onClose, isSheet);
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (event.key !== "Tab") return;

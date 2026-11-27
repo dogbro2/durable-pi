@@ -4,6 +4,8 @@ import { formatTime } from "../lib/format";
 import { PROVIDER_BASE_URL_PLACEHOLDER } from "../lib/provider";
 import { THEMES, type ThemeId } from "../lib/theme";
 import { Icon, type IconName } from "./Icon";
+import { useMediaQuery } from "../lib/useMediaQuery";
+import { useBackToClose } from "../lib/useBackToClose";
 import type { MemoryInfo } from "../types";
 
 interface SettingsDialogProps {
@@ -222,6 +224,10 @@ export function SettingsDialog({
 		setToolboxDraft({ baseUrl: toolbox.baseUrl, apiKey: "", model: toolbox.model });
 	}, [toolbox.baseUrl, toolbox.model, toolbox.hasKey]);
 
+	// 手機返回手勢關閉設定。
+	const isNarrow = useMediaQuery("(max-width: 720px)");
+	useBackToClose(open, onClose, isNarrow);
+
 	useEffect(() => {
 		if (!open) return;
 		const onKey = (e: KeyboardEvent) => {
@@ -267,7 +273,7 @@ export function SettingsDialog({
 						type="button"
 						onClick={onClose}
 						aria-label="關閉"
-						className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+						className="inline-flex h-8 w-8 items-center justify-center rounded-lg max-[720px]:h-11 max-[720px]:w-11 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
 					>
 						<Icon name="close" className="h-4 w-4" />
 					</button>
@@ -282,13 +288,13 @@ export function SettingsDialog({
 							role="tab"
 							aria-selected={tab === item.key}
 							onClick={() => setTab(item.key)}
-							className={`flex flex-1 items-center justify-center gap-1.5 rounded-t-lg border-b-2 px-2 py-2 text-[13px] font-medium transition-colors ${
+							className={`flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-t-lg border-b-2 px-2 py-2 text-[13px] font-medium transition-colors ${
 								tab === item.key
 									? "border-sky-500 text-sky-300"
 									: "border-transparent text-slate-400 hover:border-slate-700 hover:text-slate-200"
 							}`}
 						>
-						<Icon name={item.icon} className="h-3.5 w-3.5" />
+						<Icon name={item.icon} className="h-3.5 w-3.5 shrink-0 max-[480px]:hidden" />
 							{item.label}
 						</button>
 					))}

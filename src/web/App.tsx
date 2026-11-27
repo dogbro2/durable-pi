@@ -30,6 +30,7 @@ import { LEFT_OPEN_KEY, effectiveRailView, leftPaneWidth, selectRailView } from 
 import { PANEL_IDLE, isSettingsOpen, panelOf, reducePanel } from "./lib/panels";
 import { applyTheme, readTheme, type ThemeId } from "./lib/theme";
 import { useMediaQuery } from "./lib/useMediaQuery";
+import { useBackToClose } from "./lib/useBackToClose";
 import type { ApprovalInfo, AskQuestion, AutomationInfo, AutomationPatch, ChatMessage, CustomToolInfo, FileArtifact, FileInfo, GoalInfo, KbRef, McpServerInfo, MemoryInfo, PlanStep, PromptInfo, RuleInfo, SessionListItem, ShareLink, SkillInfo, SkillInstallOutcome, ToolCallInfo } from "./types";
 
 /**
@@ -103,6 +104,8 @@ export default function App() {
 	});
 	const [mobileTab, setMobileTab] = useState<MobileTab>("chat");
 	const [drawerOpen, setDrawerOpen] = useState(false);
+	// 手機抽屜：返回手勢關抽屜（與彈窗共用一條歷史記錄）。
+	useBackToClose(drawerOpen && !isDesktop, () => setDrawerOpen(false));
 	// 左側 Rail 當前展示的面板（v0.21.0）：會話 / 定時 / 使用者等左欄內容
 	const [railView, setRailView] = useState<RailView>("sessions");
 	// 知識庫 / MCP / 技能三個彈窗（NERE-62）+ 知識庫定位（NERE-41）。
@@ -1131,7 +1134,10 @@ export default function App() {
 		[isDesktop],
 	);
 	const closePanel = useCallback(() => dispatchPanel({ type: "close" }), []);
-	const openSettings = useCallback(() => dispatchPanel({ type: "settings" }), []);
+	const openSettings = useCallback(() => {
+		if (!isDesktop) setDrawerOpen(false);
+		dispatchPanel({ type: "settings" });
+	}, [isDesktop]);
 	const closeSettings = useCallback(() => dispatchPanel({ type: "close" }), []);
 
 	/** 知識庫面板按定位請求開啟過文件後呼叫：消費掉 nonce，重開彈窗不再重放（NERE-75 P1-1）。 */
@@ -1324,12 +1330,17 @@ export default function App() {
 	}, []);
 
 	const toggleLeft = useCallback(() => {
+		// 手機端左欄是抽屜：「收起左欄」就是關抽屜，不去動桌面端的持久化開關。
+		if (!isDesktop) {
+			setDrawerOpen(false);
+			return;
+		}
 		setLeftOpen((prev) => {
 			const next = !prev;
 			saveBool(LEFT_OPEN_KEY, next);
 			return next;
 		});
-	}, []);
+	}, [isDesktop]);
 
 	const toggleRight = useCallback(() => {
 		setRightOpen((prev) => {
