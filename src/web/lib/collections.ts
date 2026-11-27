@@ -66,6 +66,9 @@ export function parseSessions(raw: unknown): SessionListItem[] {
 		// 分支來源（v0.32.0）
 		parentId: pickString(entry, ["parent_id", "parentId"]) || undefined,
 		forkAt: pickNumber(entry, ["fork_at", "forkAt"]) || undefined,
+		// 專案（v1.3）
+		isProject: pickString(entry, ["kind"]) === "project" || undefined,
+		instructions: pickString(entry, ["instructions"]) || undefined,
 	}));
 }
 

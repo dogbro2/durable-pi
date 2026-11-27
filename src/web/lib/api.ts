@@ -415,6 +415,22 @@ export const api = {
 	/** POST /api/sessions — create a new conversation and return its id. */
 	createSession: () => requestJson<{ id?: string; title?: string }>("/api/sessions", { method: "POST" }),
 
+	/** POST /api/sessions kind=project — 建立專案（一個長期會話 + 資料夾 + 專案指令）。 */
+	createProject: (title: string, instructions: string) =>
+		requestJson<{ id?: string; title?: string }>("/api/sessions", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({ kind: "project", title, instructions }),
+		}),
+
+	/** PATCH /api/sessions — 改專案名稱 / 指令。 */
+	updateProject: (id: string, patch: { title?: string; instructions?: string }) =>
+		requestJson<{ ok: boolean }>("/api/sessions", {
+			method: "PATCH",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({ id, ...patch }),
+		}),
+
 	/** POST /api/branches — 從某條歷史訊息分叉出新會話（v0.32.0）。 */
 	branch: (sessionId: string, entryId: number, title?: string) =>
 		requestJson<{ ok?: boolean; id?: string; title?: string; error?: string }>(

@@ -2,6 +2,7 @@ import type { SqlHandle } from "../db/migrations";
 import type { SettingsPort } from "../http/ports";
 import type { KbRef } from "../lib/kb";
 import { listSkillMeta } from "../repo/skills-repo";
+import { getProject } from "../repo/sessions-repo";
 import type { KbService } from "./kb-service";
 import { enabledRuleContents } from "./prompts-service";
 import { goalInstructionsBlock, readGoal } from "./goal-service";
@@ -72,6 +73,24 @@ function withSkillInstructions(base: string, sql: SqlHandle, settings: SettingsP
 	return out;
 }
 
+/** 專案會話：說明它是長期專案，資料夾就是本會話的工作臺檔案，並附上專案指令。 */
+export function projectBlock(sql: SqlHandle, sessionId?: string): string {
+	if (!sessionId) return "";
+	let project: { title: string; instructions: string } | undefined;
+	try {
+		project = getProject(sql, sessionId);
+	} catch {
+		return "";
+	}
+	if (!project) return "";
+	let out =
+		`\n\n## 目前專案：${project.title}\n` +
+		"這是一個長期專案會話，所有相關對話都在這裡進行。本會話的工作臺檔案就是專案資料夾：產出的文件、資料與筆記都寫進工作臺，之後回來時先看資料夾裡已有的內容再接著做。";
+	const text = project.instructions.trim();
+	if (text) out += `\n\n### 專案指令（必須遵守）\n${text}`;
+	return out;
+}
+
 export async function buildInstructions(
 	{ sql, settings, kb }: InstructionsDeps,
 	inv: SkillInvocation | null,
@@ -80,7 +99,7 @@ export async function buildInstructions(
 ): Promise<{ instructions: string; kbRefs: KbRef[] }> {
 	const withSkills = withSkillInstructions(BASE, sql, settings);
 	const goal = sessionId ? readGoal(sql, sessionId) : null;
-	const goalBlock = goalInstructionsBlock(goal);
+	const goalBlock = goalInstructionsBlock(goal) + projectBlock(sql, sessionId);
 	const prefetch = message ? await kb.prefetch(message) : { block: "", refs: [] };
 	// 只有真正注入了檢索塊才記引用（NERE-40）：未命中/開關關閉時 kbRefs 為空。
 	const kbRefs = prefetch.block ? prefetch.refs : [];

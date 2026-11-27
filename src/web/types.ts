@@ -104,6 +104,10 @@ export interface SessionListItem {
 	parentId?: string;
 	/** 分叉點條目 id（v0.32.0）。 */
 	forkAt?: number;
+	/** 專案（v1.3）：一個長期會話，帶自己的資料夾與專案指令。 */
+	isProject?: boolean;
+	/** 專案指令。 */
+	instructions?: string;
 }
 
 /** Virtual file produced by the agent's write_file tool. */

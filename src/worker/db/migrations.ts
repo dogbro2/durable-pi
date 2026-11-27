@@ -224,6 +224,19 @@ const automationFreshSession: Migration = {
 	},
 };
 
+/**
+ * v11：專案（一個專案 = 一個長期會話，帶自己的資料夾與專案指令）。
+ * `kind` 為 chat / project；`instructions` 只對專案生效，每輪注入。
+ */
+const projectSessions: Migration = {
+	version: 11,
+	name: "project-sessions",
+	up(sql) {
+		ensureColumn(sql, "sessions_meta", "kind TEXT NOT NULL DEFAULT 'chat'");
+		ensureColumn(sql, "sessions_meta", "instructions TEXT NOT NULL DEFAULT ''");
+	},
+};
+
 export const MIGRATIONS: readonly Migration[] = [
 	initialSchema,
 	vfsRootConversation,
@@ -235,6 +248,7 @@ export const MIGRATIONS: readonly Migration[] = [
 	automationLastStatus,
 	automationLastError,
 	automationFreshSession,
+	projectSessions,
 ];
 
 // 版本號是賬本的唯一真源：重複或亂序會被 INSERT OR IGNORE 靜默跳過，模組載入時就暴露。

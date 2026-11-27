@@ -9,13 +9,17 @@ export type SessionMetaRow = {
 	model?: string;
 	parent_id?: string | null;
 	fork_at?: number | null;
+	/** chat / project（v11）。 */
+	kind?: string;
+	/** 專案指令（僅 kind = project）。 */
+	instructions?: string;
 };
 
 /** 會話列表只返回未刪除、未隱藏的後設資料，按更新時間倒序（與舊 listSessions 一致）。 */
 export function listVisible(sql: SqlHandle): SessionMetaRow[] {
 	return sql
 		.exec(
-			"SELECT id, title, created_at, updated_at, model, parent_id, fork_at FROM sessions_meta WHERE deleted = 0 AND hidden = 0 ORDER BY updated_at DESC",
+			"SELECT id, title, created_at, updated_at, model, parent_id, fork_at, kind, instructions FROM sessions_meta WHERE deleted = 0 AND hidden = 0 ORDER BY updated_at DESC",
 		)
 		.toArray() as SessionMetaRow[];
 }
@@ -146,4 +150,18 @@ export function insertHiddenIfAbsent(sql: SqlHandle, id: string, title: string, 
 		now,
 		now,
 	);
+}
+
+/** 標成專案（或改名 / 改指令）：只更新傳入的欄位。 */
+export function setProject(sql: SqlHandle, id: string, patch: { kind?: "chat" | "project"; instructions?: string }, now: string): void {
+	if (patch.kind !== undefined) sql.exec("UPDATE sessions_meta SET kind = ?, updated_at = ? WHERE id = ?", patch.kind, now, id);
+	if (patch.instructions !== undefined) sql.exec("UPDATE sessions_meta SET instructions = ? WHERE id = ?", patch.instructions, id);
+}
+
+/** 會話若是專案，返回其名稱與指令；否則 undefined。 */
+export function getProject(sql: SqlHandle, id: string): { title: string; instructions: string } | undefined {
+	const rows = sql
+		.exec("SELECT title, instructions FROM sessions_meta WHERE id = ? AND kind = 'project' AND deleted = 0", id)
+		.toArray() as { title: string; instructions: string }[];
+	return rows[0];
 }

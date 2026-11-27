@@ -5,7 +5,7 @@ import {
 	removeConversation as removeEntryKbRefs,
 	upsert as upsertEntryKbRefs,
 } from "../repo/entry-kb-refs-repo";
-import { get, insertFork, insertIfAbsent, listKnownIds, listVisible, markDeleted, rename } from "../repo/sessions-repo";
+import { get, insertFork, insertIfAbsent, listKnownIds, listVisible, markDeleted, rename, setProject } from "../repo/sessions-repo";
 import type { SessionMetaRow } from "../repo/sessions-repo";
 import { removeSession as removeSessionFiles } from "../repo/files-repo";
 import { removeForSession as removeApprovals } from "../repo/approvals-repo";
@@ -46,6 +46,8 @@ export type SessionList = {
 		model?: string;
 		parent_id?: string | null;
 		fork_at?: number | null;
+		kind?: string;
+		instructions?: string;
 	}[];
 };
 
@@ -63,7 +65,10 @@ export type SessionDeleteCounts = {
 export interface SessionService {
 	/** 後設資料表為準，儲存裡存在但後設資料缺失的會話補齊（已刪除/隱藏的不復活）。 */
 	list(): Promise<SessionList>;
-	create(): Promise<{ id: string; title: string }>;
+	/** 新會話；`project` 時建立專案（一個長期會話 + 自己的資料夾 + 專案指令）。 */
+	create(opts?: { project?: { title: string; instructions?: string } }): Promise<{ id: string; title: string; kind?: string }>;
+	/** 改專案指令 / 把會話標成專案或取消。 */
+	updateProject(id: string, patch: { kind?: "chat" | "project"; instructions?: string }): void;
 	fork(sessionId: string, entryId: number, title?: string): Promise<{ id: string; title: string }>;
 	rename(id: string, title: string): void;
 	/** 刪除會級聯清理該會話的分享、檔案、計劃、審批/許可、問題與 KB 旁路行（NERE-24）。 */
@@ -117,10 +122,26 @@ export function createSessionService({ sql, runtime }: SessionServiceDeps): Sess
 			return { sessions: rows };
 		},
 
-		async create() {
+		async create(opts) {
 			const id = await runtime.createConversation();
-			insertIfAbsent(sql, id, "新會話", new Date().toISOString());
+			const now = new Date().toISOString();
+			if (opts?.project) {
+				const title = opts.project.title.trim().slice(0, 60) || "新專案";
+				insertIfAbsent(sql, id, title, now);
+				setProject(sql, id, { kind: "project", instructions: (opts.project.instructions ?? "").slice(0, 8000) }, now);
+				return { id, title, kind: "project" };
+			}
+			insertIfAbsent(sql, id, "新會話", now);
 			return { id, title: "新會話" };
+		},
+
+		updateProject(id, patch) {
+			setProject(
+				sql,
+				id,
+				{ ...patch, ...(patch.instructions !== undefined ? { instructions: patch.instructions.slice(0, 8000) } : {}) },
+				new Date().toISOString(),
+			);
 		},
 
 		async fork(sessionId, entryId, title) {

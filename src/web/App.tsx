@@ -30,6 +30,7 @@ import { LEFT_OPEN_KEY, effectiveRailView, leftPaneWidth, selectRailView } from 
 import { PANEL_IDLE, isSettingsOpen, panelOf, reducePanel } from "./lib/panels";
 import { applyTheme, readTheme, type ThemeId } from "./lib/theme";
 import { useMediaQuery } from "./lib/useMediaQuery";
+import { ProjectDialog } from "./components/ProjectDialog";
 import { useBackToClose } from "./lib/useBackToClose";
 import type { ApprovalInfo, AskQuestion, AutomationInfo, AutomationPatch, ChatMessage, CustomToolInfo, FileArtifact, FileInfo, GoalInfo, KbRef, McpServerInfo, MemoryInfo, PlanStep, PromptInfo, RuleInfo, SessionListItem, ShareLink, SkillInfo, SkillInstallOutcome, ToolCallInfo } from "./types";
 
@@ -1285,6 +1286,51 @@ export default function App() {
 	}, [sessionId]);
 
 	/** 重新命名會話：樂觀更新側欄，失敗回滾由下一次重新整理兜底。 */
+	/** 專案（v1.3）：新建 / 編輯彈窗。editing 為 null 時是新建。 */
+	const [projectDialog, setProjectDialog] = useState<{ editing: string | null } | null>(null);
+	const handleNewProject = useCallback(() => {
+		setDrawerOpen(false);
+		setProjectDialog({ editing: null });
+	}, []);
+	const handleEditProject = useCallback((id: string) => {
+		setDrawerOpen(false);
+		setProjectDialog({ editing: id });
+	}, []);
+	const handleSubmitProject = useCallback(
+		(value: { title: string; instructions: string }) => {
+			const editing = projectDialog?.editing ?? null;
+			setProjectDialog(null);
+			if (editing) {
+				setSessions((prev) => prev.map((s) => (s.id === editing ? { ...s, title: value.title, instructions: value.instructions } : s)));
+				void api
+					.updateProject(editing, value)
+					.catch(() => undefined)
+					.finally(() => setPanelTick((tick) => tick + 1));
+				return;
+			}
+			void (async () => {
+				let created: { id?: string } | null = null;
+				try {
+					created = await api.createProject(value.title, value.instructions);
+				} catch {
+					created = null;
+				}
+				if (!created?.id) {
+					setMessages((prev) => [...prev, { id: nextId(), role: "notice", text: "新建專案失敗，請重試。" }]);
+					return;
+				}
+				abortRef.current?.abort();
+				generationRef.current += 1;
+				setSessionId(created.id);
+				setMessages([]);
+				setPending(false);
+				setElapsed(0);
+				setPanelTick((tick) => tick + 1);
+			})();
+		},
+		[projectDialog, nextId],
+	);
+
 	const handleRenameSession = useCallback(
 		(id: string, title: string) => {
 			setSessions((prev) => prev.map((s) => (s.id === id ? { ...s, title } : s)));
@@ -1569,6 +1615,8 @@ export default function App() {
 			onRename={handleRenameSession}
 			onDelete={handleDeleteSession}
 			onCollapse={toggleLeft}
+			onNewProject={handleNewProject}
+			onEditProject={handleEditProject}
 		/>
 	);
 
@@ -1830,6 +1878,18 @@ export default function App() {
 					/>
 				</Suspense>
 			</ModalShell>
+
+			{/* 專案新建 / 設定（v1.3） */}
+			<ProjectDialog
+				open={projectDialog !== null}
+				initial={(() => {
+					const id = projectDialog?.editing;
+					const project = id ? sessions.find((s) => s.id === id) : undefined;
+					return project ? { title: project.title, instructions: project.instructions ?? "" } : undefined;
+				})()}
+				onClose={() => setProjectDialog(null)}
+				onSubmit={handleSubmitProject}
+			/>
 
 			{/* Mobile drawer: the session sidebar slides over the chat */}
 			{!isDesktop && drawerOpen && (

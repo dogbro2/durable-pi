@@ -19,16 +19,36 @@ export const sessionRoutes: readonly Route[] = [
 		method: "POST",
 		path: "/sessions",
 		needsHarness: true,
-		handle: async (ctx) => Response.json(await service(ctx).create()),
+		handle: async (ctx) => {
+			const body = (await ctx.req.json().catch(() => ({}))) as { kind?: string; title?: string; instructions?: string };
+			if (body.kind === "project") {
+				if (!body.title?.trim()) throw new AppError("bad_request", 400, "專案需要名稱");
+				return Response.json(await service(ctx).create({ project: { title: body.title, instructions: body.instructions } }));
+			}
+			return Response.json(await service(ctx).create());
+		},
 	},
 	{
 		method: "PATCH",
 		path: "/sessions",
 		needsHarness: true,
 		handle: async (ctx) => {
-			const { id, title } = (await ctx.req.json()) as { id?: string; title?: string };
-			if (!id || !title?.trim()) throw new AppError("bad_request", 400, "缺少 id 或標題");
-			service(ctx).rename(id, title);
+			const { id, title, instructions, kind } = (await ctx.req.json()) as {
+				id?: string;
+				title?: string;
+				instructions?: string;
+				kind?: string;
+			};
+			if (!id) throw new AppError("bad_request", 400, "缺少 id");
+			const hasProjectPatch = typeof instructions === "string" || kind === "project" || kind === "chat";
+			if (!title?.trim() && !hasProjectPatch) throw new AppError("bad_request", 400, "缺少 id 或標題");
+			if (title?.trim()) service(ctx).rename(id, title);
+			if (hasProjectPatch) {
+				service(ctx).updateProject(id, {
+					...(kind === "project" || kind === "chat" ? { kind } : {}),
+					...(typeof instructions === "string" ? { instructions } : {}),
+				});
+			}
 			return Response.json({ ok: true });
 		},
 	},
