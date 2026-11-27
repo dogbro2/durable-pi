@@ -131,6 +131,25 @@ export function ModalShell({
 		return () => document.removeEventListener("keydown", onKey, true);
 	}, [open]);
 
+	// 手機（sheet）：系統返回鍵 / 返回手勢關閉彈窗，而不是離開頁面。
+	useEffect(() => {
+		if (!open || !isSheet || typeof window === "undefined") return;
+		const marker = { durablePiModal: titleId };
+		window.history.pushState(marker, "");
+		let poppedByBack = false;
+		const onPop = () => {
+			poppedByBack = true;
+			onCloseRef.current();
+		};
+		window.addEventListener("popstate", onPop);
+		return () => {
+			window.removeEventListener("popstate", onPop);
+			// 用按鈕 / Esc / 遮罩關閉時，把剛推入的歷史記錄退掉，避免要多按一次返回。
+			const state = window.history.state as { durablePiModal?: string } | null;
+			if (!poppedByBack && state?.durablePiModal === titleId) window.history.back();
+		};
+	}, [open, isSheet, titleId]);
+
 	const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (event.key !== "Tab") return;
 		const items = focusableWithin(dialogRef.current);
@@ -173,7 +192,12 @@ export function ModalShell({
 						: `max-h-[90vh] rounded-2xl ${MODAL_SIZE[size]}`
 				}`}
 			>
-				<header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-800/70 px-5 py-3">
+				<header
+					className={`flex shrink-0 items-center justify-between gap-3 border-b border-slate-800/70 px-5 ${
+						// 全屏 sheet + viewport-fit=cover：標題列避開瀏海 / 狀態列，否則關閉鈕被蓋住點不到。
+						isSheet ? "pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))]" : "py-3"
+					}`}
+				>
 					<h2 id={titleId} className="text-sm font-semibold text-slate-100">
 						{title}
 					</h2>
